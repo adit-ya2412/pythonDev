@@ -1,7 +1,7 @@
 class Product:
     product_id_counter=1001
 
-
+    # dunder metheods (double underscore methods) enable printing, equality , addition of objects and other stuff
     def __str__(self):
         return(f"Product: {self.name} | Price: {self.price}| Quantity: {self.quantity}")
     def __init__(self,name,price,quantity):
