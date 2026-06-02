@@ -41,7 +41,7 @@ class Employee:
     salary:int
 
 
-employee_list=[Employee]
+employee_list=[]
 for employee in json_data:
     employee_list.append(Employee(employee['name'],employee['department'],employee['salary']))
 
