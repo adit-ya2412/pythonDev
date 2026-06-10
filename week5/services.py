@@ -1,6 +1,16 @@
-from fastapi import HTTPException,status
+from fastapi import HTTPException,status,Depends
+from schemas import Employee,EmployeeCreate
+from models import Employee
+from sqlalchemy.orm import Session
+from database import SessionLocal
 
-from schemas import Employee
+def get_db():
+    db=SessionLocal()
+    try :
+        yield db
+    finally:
+        db.close()
+    
 
 
 def get_employee(employee_id: int):
@@ -42,11 +52,19 @@ def update_employee(
     
 
 
-def create_employee(employee: Employee):
+def create_employee(employee: EmployeeCreate,
+                    db:Session=Depends(get_db)):
 
-    employees.append(employee)
+        db_employee=Employee(
+            name=employee.name,
+            department=employee.department,
+            salary=employee.salary
+        )
+        db.add(db_employee)
+        db.commit()
+        db.refresh(db_employee)
 
-    return employee
+        return db_employee
 
 def delete_employee(employee_id:int):
     for emp in employees:

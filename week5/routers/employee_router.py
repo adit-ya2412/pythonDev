@@ -1,7 +1,8 @@
 from fastapi import APIRouter
-from fastapi import status
-from schemas import Employee
-from services import get_employee,get_employees,create_employee,update_employee,delete_employee
+from fastapi import status,Depends
+from  sqlalchemy.orm import Session
+from schemas import Employee,EmployeeCreate
+from services import get_employee,get_employees,create_employee,update_employee,delete_employee,get_db
 router= APIRouter()
 
 @router.get("/employees")
@@ -29,7 +30,8 @@ def update_employee_method(
 
 @router.post("/employees",
           status_code=status.HTTP_201_CREATED)
-def create_employee_method(employee: Employee):
+def create_employee_method(employee: EmployeeCreate,db:
+                           Session=Depends(get_db)):
             return create_employee(employee)
 
 
