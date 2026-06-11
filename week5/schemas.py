@@ -8,11 +8,23 @@ class Employee(BaseModel):
 
 class EmployeeCreate(BaseModel):
     name:str
-    department:str
+    department_id:int
     salary:int
+
+class DepartmentResponse(BaseModel):
+
+    id: int
+    name: str
+
+    class Config:
+        from_attributes = True
 
 class EmployeeResponse(BaseModel):
     id:int
     name:str
-    department:str
+    department:DepartmentResponse | None=None
     salary:int
+
+    class Config:
+        from_attributes=True
+

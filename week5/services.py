@@ -1,22 +1,21 @@
 from fastapi import HTTPException,status,Depends
 from schemas import Employee,EmployeeCreate
-from models import Employee
+from models import Employee,Department
 from sqlalchemy.orm import Session
-from database import SessionLocal
-
-def get_db():
-    db=SessionLocal()
-    try :
-        yield db
-    finally:
-        db.close()
     
 
 
-def get_employee(employee_id: int):
-    for emp in employees:
-        if emp.id == employee_id:
-            return emp
+def get_employee(employee_id: int,db:Session):
+
+    employee=(
+        db.query(Employee)
+        .filter(Employee.id == employee_id)
+        .first()
+    )
+
+    if employee :
+        return employee
+   
     
     raise HTTPException(
         status_code=404,
@@ -24,40 +23,50 @@ def get_employee(employee_id: int):
     )
 
 def get_employees(
+         db:Session,
     department: str | None = None
 ):
 
     if department:
+        return(
+            db.query(Employee)
+            .filter(Employee.department == department)
+            .all()
+        )
+        
 
-        return [
-            emp
-            for emp in employees
-            if emp.department == department
-        ]
-
-    return employees
+    return db.query(Employee).all()
     
 def update_employee(
     employee_id:int,
-    updated_employee:Employee
+    updated_employee:EmployeeCreate,
+    db:Session
 ):
-    for index,emp in   enumerate(employees):
-        if emp.id == employee_id:
-            employees[index]=(updated_employee)
-            return updated_employee    
-    raise HTTPException(
+    
+    employee=(
+        db.query(Employee)
+        .filter(Employee.id == employee_id)
+        .first()
+    )
+    if not employee:
+        raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Employee not found"
             )
-    
+    employee.name=updated_employee.name
+    employee.department=updated_employee.department
+    employee.salary=updated_employee.salary
+    db.commit()
+    db.refresh(employee)
+    return employee
 
 
 def create_employee(employee: EmployeeCreate,
-                    db:Session=Depends(get_db)):
+                    db:Session):
 
         db_employee=Employee(
             name=employee.name,
-            department=employee.department,
+            department_id=employee.department_id,
             salary=employee.salary
         )
         db.add(db_employee)
@@ -66,28 +75,46 @@ def create_employee(employee: EmployeeCreate,
 
         return db_employee
 
-def delete_employee(employee_id:int):
-    for emp in employees:
-        if emp.id == employee_id:
-            employees.remove(emp)
-            return
-    raise HTTPException(
+def delete_employee(employee_id:int, db:Session):
+       
+    employee= (
+         db.query(Employee)
+         .filter(Employee.id==employee_id)
+         .first()
+    )
+      
+    if not employee:
+        raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
         detail="Employee not found"
-    ) 
+        )
+    db.delete(employee)
+    db.commit()
+    return {"message":"Employee Deleted"}     
 
-
-employees = [
-    Employee(
-        id=1,
-        name="Aditya",
-        department="Engineering",
-        salary=100000
-    ),
-    Employee(
-        id=2,
-        name="Rohan",
-        department="Engineering",
-        salary=120000
+def get_department_employees(
+        department_id:int,
+        db:Session
+        ):
+    department=(
+        db.query(Department)
+        .filter(Department.id== department_id)
+        .first()
     )
-]
+    if not department:
+        raise HTTPException(
+            status_code=404,
+            detail="Department not found"
+        )
+
+    
+    return department.employees
+
+def create_department(department_name:str, db:Session):
+    department=Department(name=department_name)
+    db.add(department)
+    db.commit()
+    return {"message":"Department Created"}
+
+def getDepartments(db:Session):
+   return db.query(Department).all()
