@@ -15,6 +15,7 @@ class Employee(Base):
         primary_key=True,
         index=True
     )
+    email = Column(String)
 
     name = Column(String)
 
