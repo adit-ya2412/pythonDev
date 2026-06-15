@@ -1,3 +1,62 @@
 venv/
 .venv/
 env/
+
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+.env/
+.venv/
+
+# Environment Variables
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Alembic
+alembic/versions/__pycache__/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+
+# Build
+build/
+dist/
+*.egg-info/
+
+# Uploads (for future file upload projects)
+uploads/
+
+# Jupyter (for ML later)
+.ipynb_checkpoints/
+
+# MyPy
+.mypy_cache/
+
+# Ruff
+.ruff_cache/
+
+# Temporary files
+*.tmp
+*.bak
