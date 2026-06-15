@@ -4,6 +4,7 @@ from models import Employee,Department,User
 from sqlalchemy.orm import Session
 from password_hashing_util import get_password_hash,verify_password
 from jwt_config import create_access_token    
+import time
 
 def get_employee(employee_id: int,db:Session):
 
@@ -182,3 +183,23 @@ def login_user(
         "access_token":token,
         "token_type":"bearer"
     }
+
+def send_email(username:str):
+    print(f"Starting email for {username}")
+    time.sleep(5)
+    print(f"Email sent to {username}")
+
+def process_document(
+    document_name: str
+):
+
+    print(
+        f"Processing {document_name}"
+    )
+
+    time.sleep(10)
+
+    print(
+        f"Finished {document_name}"
+    )
+
