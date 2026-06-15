@@ -1,9 +1,9 @@
 from fastapi import HTTPException,status,Depends
-from schemas import Employee,EmployeeCreate
-from models import Employee,Department
+from schemas import Employee,EmployeeCreate,UserCreate,LoginRequest
+from models import Employee,Department,User
 from sqlalchemy.orm import Session
-    
-
+from password_hashing_util import get_password_hash,verify_password
+from jwt_config import create_access_token    
 
 def get_employee(employee_id: int,db:Session):
 
@@ -118,3 +118,67 @@ def create_department(department_name:str, db:Session):
 
 def getDepartments(db:Session):
    return db.query(Department).all()
+
+def create_user(
+        user:UserCreate,
+        db:Session
+        ):
+    existing_user=(
+        db.query(User)
+        .filter(User.username == user.username)
+        .first()
+    )
+
+    if existing_user :
+        raise HTTPException(
+            status_code=400,
+            detail="Username already exists"
+        )
+    hashed_password=get_password_hash(user.password)
+
+    db_user=User(
+        username=user.username,
+        hashed_password=hashed_password
+    )
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+
+    return db_user
+
+
+def login_user(
+        login_request:LoginRequest,
+        db:Session
+):
+    user=(
+        db.query(User)
+        .filter(
+            User.username == login_request.username
+        )
+        .first()
+    )
+    if not user:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid credentials"
+        )
+    if not verify_password(
+        login_request.password,
+        user.hashed_password
+    ):
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid credentials"
+        )
+    token= create_access_token(
+        {
+            "sub":user.username,
+            "role":user.role
+        }
+    )
+
+    return {
+        "access_token":token,
+        "token_type":"bearer"
+    }

@@ -1,10 +1,11 @@
 from fastapi import APIRouter
 from fastapi import status,Depends
 from  sqlalchemy.orm import Session
-from schemas import EmployeeCreate,EmployeeResponse
-
+from schemas import EmployeeCreate,EmployeeResponse,UserResponse,UserCreate,LoginRequest
+from get_token_util import get_current_user
+from models import User
 from dependencies import get_db
-from services import create_department,getDepartments, get_department_employees, get_employee,get_employees,create_employee,update_employee,delete_employee
+from services import create_department,getDepartments, get_department_employees, get_employee,get_employees,create_employee,update_employee,delete_employee,create_user,login_user
 router= APIRouter()
 
 
@@ -59,3 +60,31 @@ def get_departments(
 def create_department_for_employee(
      department_name:str,db:Session=Depends(get_db)):
      return create_department(department_name,db)
+
+@router.post("/register",
+             response_model=UserResponse,
+             status_code=201)
+def register(
+     user:UserCreate,
+     db:Session =Depends(get_db)
+):
+     return create_user(
+          user,
+          db)
+
+
+@router.post("/login")
+def login(
+     login_request:LoginRequest,
+     db: Session = Depends(get_db)
+     ):
+     return login_user(
+          login_request,
+          db
+     )
+
+@router.get("/me")
+def get_me(
+     current_user:User =Depends(get_current_user)
+):
+     return current_user
