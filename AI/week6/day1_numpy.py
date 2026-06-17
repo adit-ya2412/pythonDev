@@ -64,3 +64,72 @@ print(arr)
 
 print(arr.reshape(3,4))
 print(arr.reshape(4,3))
+
+print(np.zeros((2,2)))
+print(np.ones((2,5)))
+print(np.arange(1,5))
+print(np.linspace(0,10,5))
+
+
+a=np.zeros((2,2))
+b=np.ones((2,2))
+print(a+b)
+print(np.arange(1,11).reshape(2,5))
+print(np.linspace(0,100,5))
+
+
+
+A = np.array([
+    [1,2],
+    [3,4]
+])
+
+B = np.array([
+    [5,6],
+    [7,8]
+])
+
+print(A.T)
+
+print(np.dot(
+    np.array([1,2,3]),
+    np.array([4,5,6])
+))
+
+print(A @ B)
+
+
+print(np.random.rand(3,3))
+np.random.seed(42) # for fixing random ness
+print(np.random.randint(
+    1,100,size=(3,3)
+))
+
+
+print(arr.mean())
+
+print(arr.std())
+
+print(arr.var())
+
+print(arr.max())
+
+print(arr.min())
+
+print(np.concatenate((A,B),axis=0))
+
+print(np.vstack((A,B)))
+
+print(np.hstack((A,B)))
+
+print(A.flatten())
+
+
+
+flatt=A.ravel() #this does not create a copy
+
+
+print(flatt)
+flatt[0]=99
+print(flatt)
+print(flatt.shape)
